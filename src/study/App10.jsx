@@ -39,6 +39,8 @@ function App10(props) {
 
     }
 
+    console.log("??????");
+
     return (
         <div>
             <h1>Num 1 : {num1}</h1>
