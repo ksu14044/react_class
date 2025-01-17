@@ -83,6 +83,44 @@ function App11(props) {
 
     p3.then((r)=>{
         console.log(r);
+        if(true) {
+            throw new Error("오류!!!");
+        }
+        return {
+            response: {
+                ...r.response,
+                data: {
+                    ...r.response.data,
+                    name: "김준일",
+                    email: "aaa@gmail.com",
+                }
+            }
+        }
+    }).then((r)=>{
+        console.log(r);
+    }).catch((error) =>{
+        console.error(error)
+    });
+
+    const p4 = new Promise((resolve, reject)=> {
+        console.log("Promise4 생성");
+
+        const response = {
+            status: 400,
+            data: {
+                errorMessage: "문자열 형식이 맞지 않습니다.",
+            }
+        }
+
+        if(false) {
+            resolve({response});
+        } else {
+            reject(new Error(JSON.stringify({response})));
+        }
+    });
+
+    p4.catch((error) =>{
+        console.error(error);
     });
     
     return (
