@@ -36,7 +36,11 @@ export const leftContainer = css`
         display: flex;
         
         & li {
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
             margin-left: 30px;
+            padding: 5px 10px;
             font-weight: 600;
             transition: all 0.2s ease-in-out;
             color: #666666;
@@ -44,6 +48,10 @@ export const leftContainer = css`
             &:hover {
                 transform: scale(110%);
                 color: #222222;
+            }
+
+            & > svg {
+                margin-right: 5px;
             }
         }
     }
@@ -56,5 +64,33 @@ export const rightContainer = css`
     & > ul {
         display: flex;
 
+        & li {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5px 3px 3px;
+            margin-left: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            
+            &::after{
+                content: "";
+                position: absolute;
+                border: 0px solid #222222;
+                width: 0%;
+                bottom: 0;
+                transition: all 0.2s ease-in-out;
+            }
+
+            &:hover::after {
+                border: 1px solid #222222;
+                width: 100%;
+            }
+
+            & > svg {
+                margin-right: 5px;
+            }
+        }
     }
 `;
