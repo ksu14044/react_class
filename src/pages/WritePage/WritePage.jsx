@@ -1,6 +1,7 @@
 /**@jsxImportSource @emotion/react */
+import axios from 'axios';
 import * as s from './style';
-import React from 'react';
+import React, { useState } from 'react';
 import { useEffect } from 'react';
 import ReactQuill, { Quill } from 'react-quill';
 
@@ -42,15 +43,59 @@ function WritePage(props) {
         head.appendChild(link);
     }, []);
 
+    const [ inputValue, setInputValue ] = useState({
+        title: "",
+        content: "",
+    });
+
+    const handleInputOnChange = (e) => {
+        setInputValue({
+            ...inputValue,
+            [e.target.name]: e.target.value,
+        })
+    }
+
+    const handleQuillOnChange = (value) => {
+        setInputValue({
+            ...inputValue,
+            content: value,
+        })
+    }
+
+    const handleWriteSubmitOnClick = async () => {
+
+        try {
+            const response = await axios.post("http://localhost:8080/servlet_study_war/api/board", inputValue);    
+        } catch (error) {
+            
+        }
+    }
+
     return (
         <div>
             <div css={s.headerLayout}>
-                <button>작성하기</button>
+                <button onClick={handleWriteSubmitOnClick}>작성하기</button>
             </div>
+            <div css={s.titleLayout}>
+                <input type="text"
+                    name='title'
+                    placeholder='여기에 제목을 입력하세요.'
+                    value={inputValue.title}
+                    onChange={handleInputOnChange}
+                />
+            </div>
+
             <ReactQuill 
                 modules={{
                     toolbar: toolbarOptions,
                 }}
+                style={{
+                    boxSizing: "border-box",
+                    width: "100%",
+                    height: "600px",
+                }}
+            value={inputValue.content}
+            onChange={handleQuillOnChange}
             />
         </div>
     );
