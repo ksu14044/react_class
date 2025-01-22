@@ -1,10 +1,11 @@
 /**@jsxImportSource @emotion/react */
 import axios from 'axios';
 import * as s from './style';
-import React, { useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 
 function SigninPage(props) {
+    const [ searchParams ] = useSearchParams();
 
     const [ inputRefs ] = useState([
         useRef(),useRef(),useRef(),useRef()
@@ -15,9 +16,14 @@ function SigninPage(props) {
     const [ inputValue, setInputValue ] = useState({
         username: "",
         password: "",
-        name: "",
-        email: "",
     });
+
+    useEffect(() => {
+        setInputValue({
+            ...inputValue,
+            username: searchParams.get("username"),
+        })
+    }, [searchParams.get("username")])
 
     const handleInputOnChange = (e) => {
         setInputValue({
@@ -47,8 +53,9 @@ function SigninPage(props) {
     const handleSigninSubmitOnClick = async () => {
         try {
             const response = await axios.post("http://localhost:8080/servlet_study_war/api/signin", inputValue);
+            console.log(response);
         } catch (error) {
-            
+            console.error(error);
         }
     }
 

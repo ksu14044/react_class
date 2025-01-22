@@ -2,9 +2,11 @@
 import axios from 'axios';
 import * as s from './style';
 import React, { useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function SignupPage(props) {
+
+    const navigate = useNavigate();
 
     const [ inputRefs ] = useState([
         useRef(),useRef(),useRef(),useRef()
@@ -47,6 +49,8 @@ function SignupPage(props) {
     const handleSignupSubmitOnClick = async () => {
         try {
             const response = await axios.post("http://localhost:8080/servlet_study_war/api/signup", inputValue);
+            alert("회원가입 완료");
+            navigate(`/signin?username=${response.data.data.username}`);
         } catch (error) {
             
         }
