@@ -29,7 +29,7 @@ function SignupPage(props) {
     }
 
     const handleInputOnKeyDown = (e) => {
-        if(e.keyCode == 13) {
+        if(e.keyCode === 13) {
             let foundIndex = -1;
             for(let i = 0 ; i < inputRefs.length ; i++){
                 if(inputRefs[i].current === e.target){
@@ -50,7 +50,7 @@ function SignupPage(props) {
         try {
             const response = await axios.post("http://localhost:8080/servlet_study_war/api/signup", inputValue);
             alert("회원가입 완료");
-            navigate(`/signin?username=${response.data.data.username}`);
+            navigate(`/signin?username=${response.data.body.username}`);
         } catch (error) {
             
         }

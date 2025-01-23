@@ -2,11 +2,13 @@
 import axios from 'axios';
 import * as s from './style';
 import React, { useEffect, useRef, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
 function SigninPage(props) {
     const [ searchParams ] = useSearchParams();
 
+    const navigate = useNavigate();
+    
     const [ inputRefs ] = useState([
         useRef(),useRef(),useRef(),useRef()
     ])
@@ -21,7 +23,7 @@ function SigninPage(props) {
     useEffect(() => {
         setInputValue({
             ...inputValue,
-            username: searchParams.get("username"),
+            username: searchParams.get("username") || "",
         })
     }, [searchParams.get("username")])
 
@@ -33,7 +35,7 @@ function SigninPage(props) {
     }
 
     const handleInputOnKeyDown = (e) => {
-        if(e.keyCode == 13) {
+        if(e.keyCode === 13) {
             let foundIndex = -1;
             for(let i = 0 ; i < inputRefs.length ; i++){
                 if(inputRefs[i].current === e.target){
@@ -53,7 +55,8 @@ function SigninPage(props) {
     const handleSigninSubmitOnClick = async () => {
         try {
             const response = await axios.post("http://localhost:8080/servlet_study_war/api/signin", inputValue);
-            console.log(response);
+            localStorage.setItem("AccessToken", response.data.body);
+            navigate("/");
         } catch (error) {
             console.error(error);
         }
