@@ -11,10 +11,12 @@ import SignupPage from './pages/SignupPage/SignupPage';
 import SigninPage from './pages/SigninPage/SigninPage';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useRecoilState } from 'recoil';
+import { authUserIdAtomState } from './atoms/authAtom';
 
 
 function App(props) {
-  const [ userId, setUserId ] = useState(0);
+  const [ userId, setUserId ] = useRecoilState(authUserIdAtomState);
 
   const location = useLocation();
 

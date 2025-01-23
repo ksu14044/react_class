@@ -4,14 +4,17 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import RouterDom from './components/RouterDom/RouterDom';
 import App from './App';
+import { RecoilRoot } from 'recoil';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
-    <BrowserRouter>
-        <App />
-    </BrowserRouter>
+    <RecoilRoot>
+        <BrowserRouter>
+            <App />
+        </BrowserRouter>
+    </RecoilRoot>
 );
 //root.render(<App />);
 //root.render(<App3 />);
