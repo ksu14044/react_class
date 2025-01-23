@@ -13,48 +13,49 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useRecoilState } from 'recoil';
 import { authUserIdAtomState } from './atoms/authAtom';
+import { useQuery } from 'react-query';
 
 
 function App(props) {
-  const [ userId, setUserId ] = useRecoilState(authUserIdAtomState);
-
   const location = useLocation();
 
-  const authenticatedUser = async (accessToken) => {
-    try {
-      const response = await axios.get("http://localhost:8080/servlet_study_war/api/authenticated", {
-        headers: {
-          "Authorization": `Bearer ${accessToken}`,
-        }
-      });
-      setUserId(response.data.body);
-
-    } catch (error) {
-      console.error(error)
-      setUserId(0);
-    }
+  const authenticatedUser = async () => {
+    
+    return await axios.get("http://localhost:8080/servlet_study_war/api/authenticated", {
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("AccessToken")}`,
+      }
+    });
   };
 
-  useEffect( () => {
-    const accessToken = localStorage.getItem("AccessToken");
-    if(!!accessToken) {
-      authenticatedUser(accessToken);
+  const authenticatedUserQuery = useQuery(
+    ["authenticatedUserQuery"],
+    authenticatedUser,
+    {
+      refetchOnWindowFocus: false,
+      enabled: !!localStorage.getItem("AccessToken"),
     }
-  }, [location.pathname])
+  );
+
+  console.log(authenticatedUserQuery.isLoading);
 
   return (
     <>
       <Global styles={global}/>
-
-      <MainLayout>
-        <Routes>
-          <Route path="/" element={ <IndexPage />} />
-          <Route path="/write" element={ <WritePage /> } />
-          <Route path="/list" element={<ListPage /> } />
-          <Route path="/signup" element={<SignupPage />} />
-          <Route path="/signin" element={<SigninPage />} />
-        </Routes>
-      </MainLayout>
+      {
+        authenticatedUserQuery.isLoading ? <></>
+        : 
+        <MainLayout>
+          <Routes>
+            <Route path="/" element={ <IndexPage />} />
+            <Route path="/write" element={ <WritePage /> } />
+            <Route path="/list" element={<ListPage /> } />
+            <Route path="/signup" element={<SignupPage />} />
+            <Route path="/signin" element={<SigninPage />} />
+          </Routes>
+        </MainLayout>
+      }
+      
 
     </>
   );

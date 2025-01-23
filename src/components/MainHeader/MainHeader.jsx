@@ -6,32 +6,31 @@ import { LuUserRoundPlus, LuLogIn, LuLogOut, LuUser, LuLayoutList, LuNotebookPen
 import { authUserIdAtomState } from '../../atoms/authAtom';
 import { useRecoilState } from 'recoil';
 import axios from 'axios';
+import { useQuery, useQueryClient } from 'react-query';
 
 function MainHeader(props) {
-    const [ userId, setUserId ] = useRecoilState(authUserIdAtomState);
-    const [ loadStatus, setLoadStatus ] = useState("idle"); // loading, success
+    const queryClinet = useQueryClient();
+    const userId = queryClinet.getQueryData(["authenticatedUserQuery"])?.data.body;
 
-    const getUserApi = async (userId) => {
-        try {
-            const response = await axios.get("http://localhost:8080/servlet_study_war/api/user", {
-                headers: {
-                    "Authorization": "Bearer " + localStorage.getItem("AccessToken")
-                },
-                params: {
-                    "userId": userId,
-                }
-            });
-            console.log(response);
-        } catch (error) {
-            
-        }
+    const getUserApi = async () => {
+        return await axios.get("http://localhost:8080/servlet_study_war/api/user", {
+            headers: {
+                "Authorization": "Bearer " + localStorage.getItem("AccessToken")
+            },
+            params: {
+                "userId": userId,
+            }
+        });
     }
 
-    useEffect(() =>{
-        if(!!userId){
-            getUserApi(userId);
+    const getUserQuery = useQuery(
+        ["getUserQuery", userId],
+        getUserApi,
+        {
+            refetchOnWindowFocus: false,
+            enabled: !!userId,
         }
-    }, [userId]);
+    );
 
     return (
         <div css={s.layout}>
@@ -57,7 +56,7 @@ function MainHeader(props) {
                     <ul>
                     <Link to={"/mypage"}>
                         <li>
-                            <LuUser /> 사용자이름
+                            <LuUser /> {getUserQuery.isLoading ? "" : getUserQuery.data.data.username}
                         </li>
                     </Link>
                     <Link to={"/logout"}>

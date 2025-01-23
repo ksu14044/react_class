@@ -5,15 +5,19 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import RouterDom from './components/RouterDom/RouterDom';
 import App from './App';
 import { RecoilRoot } from 'recoil';
+import { QueryClient, QueryClientProvider } from 'react-query';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+const queryClient = new QueryClient();
 
 root.render(
     <RecoilRoot>
-        <BrowserRouter>
-            <App />
-        </BrowserRouter>
+        <QueryClientProvider client={queryClient}>
+            <BrowserRouter>
+                <App />
+            </BrowserRouter>
+        </QueryClientProvider>
     </RecoilRoot>
 );
 //root.render(<App />);
