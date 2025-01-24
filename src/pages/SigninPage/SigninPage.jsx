@@ -3,15 +3,18 @@ import axios from 'axios';
 import * as s from './style';
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useRecoilState } from 'recoil';
+import { accessTokenAtomState } from '../../atoms/authAtom';
+import { useQueryClient } from 'react-query';
 
 function SigninPage(props) {
+    const queryClient = useQueryClient();
     const [ searchParams ] = useSearchParams();
-
+    const [ accessToken, setAccessToken ] = useRecoilState(accessTokenAtomState);
     const navigate = useNavigate();
     
     const [ inputRefs ] = useState([
-        useRef(),useRef(),useRef(),useRef()
-    ])
+        useRef(),useRef()])
 ;
     const [ buttonRefs ] = useState([useRef()]); 
 
@@ -56,6 +59,7 @@ function SigninPage(props) {
         try {
             const response = await axios.post("http://localhost:8080/servlet_study_war/api/signin", inputValue);
             localStorage.setItem("AccessToken", response.data.body);
+            setAccessToken(localStorage.getItem("AccessToken"));
             navigate("/");
         } catch (error) {
             console.error(error);

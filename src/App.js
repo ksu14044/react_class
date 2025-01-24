@@ -1,6 +1,6 @@
 
 import './App.css';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import IndexPage from './pages/IndexPage/IndexPage';
 import WritePage from './pages/WritePage/WritePage';
 import { Global } from '@emotion/react';
@@ -9,15 +9,19 @@ import MainLayout from './components/MainLayout/MainLayout';
 import ListPage from './pages/ListPage/ListPage';
 import SignupPage from './pages/SignupPage/SignupPage';
 import SigninPage from './pages/SigninPage/SigninPage';
-import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useRecoilState } from 'recoil';
-import { authUserIdAtomState } from './atoms/authAtom';
 import { useQuery } from 'react-query';
+import { accessTokenAtomState } from './atoms/authAtom';
+import { useEffect } from 'react';
 
 
 function App(props) {
-  const location = useLocation();
+  const [ accessToken, setAccessToken ] = useRecoilState(accessTokenAtomState);
+
+  useEffect(() => {
+    authenticatedUserQuery.refetch();
+  }, [accessToken]);
 
   const authenticatedUser = async () => {
     
@@ -32,8 +36,9 @@ function App(props) {
     ["authenticatedUserQuery"],
     authenticatedUser,
     {
+      retry: 0,
       refetchOnWindowFocus: false,
-      enabled: !!localStorage.getItem("AccessToken"),
+      enabled: !!accessToken,
     }
   );
 
@@ -43,7 +48,9 @@ function App(props) {
     <>
       <Global styles={global}/>
       {
-        authenticatedUserQuery.isLoading ? <></>
+        authenticatedUserQuery.isLoading
+        ?
+        <></>
         : 
         <MainLayout>
           <Routes>

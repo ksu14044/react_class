@@ -1,21 +1,23 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 /** @jsxImportSource @emotion/react */
 import * as s from './style';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { LuUserRoundPlus, LuLogIn, LuLogOut, LuUser, LuLayoutList, LuNotebookPen   } from "react-icons/lu";
-import { authUserIdAtomState } from '../../atoms/authAtom';
-import { useRecoilState } from 'recoil';
 import axios from 'axios';
 import { useQuery, useQueryClient } from 'react-query';
+import { useRecoilState, useSetRecoilState } from 'recoil';
+import { accessTokenAtomState } from '../../atoms/authAtom';
 
 function MainHeader(props) {
-    const queryClinet = useQueryClient();
-    const userId = queryClinet.getQueryData(["authenticatedUserQuery"])?.data.body;
+    const navigate = useNavigate();
+    const queryClient = useQueryClient();
+    const userId = queryClient.getQueryData(["authenticatedUserQuery"])?.data.body;
+    const [accessToken, setAccessToken] = useRecoilState(accessTokenAtomState);
 
     const getUserApi = async () => {
         return await axios.get("http://localhost:8080/servlet_study_war/api/user", {
             headers: {
-                "Authorization": "Bearer " + localStorage.getItem("AccessToken")
+                "Authorization": "Bearer " + localStorage.getItem("AccessToken"),
             },
             params: {
                 "userId": userId,
@@ -24,13 +26,21 @@ function MainHeader(props) {
     }
 
     const getUserQuery = useQuery(
-        ["getUserQuery", userId],
+        ["getUserQuery"],
         getUserApi,
-        {
+        {   
+            retry: 0,
             refetchOnWindowFocus: false,
             enabled: !!userId,
         }
     );
+
+    const handleLogoutOnClick = () => {
+        localStorage.removeItem("AccessToken");
+        setAccessToken(localStorage.getItem("AccessToken"));
+        queryClient.removeQueries(["authenticatedUserQuery"]);
+        navigate("/signin");
+    }
 
     return (
         <div css={s.layout}>
@@ -56,14 +66,14 @@ function MainHeader(props) {
                     <ul>
                     <Link to={"/mypage"}>
                         <li>
-                            <LuUser /> {getUserQuery.isLoading ? "" : getUserQuery.data.data.username}
+                            <LuUser /> {getUserQuery.isLoading ? "" : getUserQuery.data.data.body.username}
                         </li>
                     </Link>
-                    <Link to={"/logout"}>
+                    <a href='javascript: void(0)' onClick={handleLogoutOnClick}>
                         <li>
                             <LuLogOut />로그아웃
                         </li>
-                    </Link>
+                    </a>
                     </ul>
                     :
                     <ul>
